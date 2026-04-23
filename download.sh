@@ -13,4 +13,4 @@ python3 main.py --url hhttps://www.ipc-services.org/sdms/web/rankings/ath/excel/
 python3 main.py --url https://www.ipc-services.org/sdms/web/rankings/ath/excel/type/asr/list/1155/location/outdoor --output leads/asia.csv --code PAL
 python3 main.py --url https://www.ipc-services.org/sdms/web/rankings/ath/excel/type/eur/list/1155/location/outdoor --output leads/europe.csv --code PAL
 python3 main.py --url https://www.ipc-services.org/sdms/web/rankings/ath/excel/type/ocr/list/1155/location/outdoor --output leads/oceania.csv --code PAL
-python3 main.py --url https://www.ipc-services.org/sdms/web/rankings/ath/excel/type/pr/list/1155/location/outdoor --output records/paralympics.csv --code PR
+python3 main.py --url https://www.ipc-services.org/sdms/web/records/ath/excel/type/PR --output records/paralympics.csv --code PR
