@@ -52,8 +52,8 @@ if __name__ == '__main__':
     df = df[~df.eq("vacant").any(axis=1)]
 
     # Drop all rows where "SDMS ID" is 1 or NaN
-    df = df[~df["SDMS ID"].eq(1)]
-    df = df.dropna(subset=["SDMS ID"])
+    df = df[~df["Athlete ID"].eq(1)]
+    df = df.dropna(subset=["Athlete ID"])
 
     # remove all where Equalled is "="
     if "Equalled" in df.columns:
