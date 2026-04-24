@@ -137,7 +137,7 @@ if __name__ == '__main__':
 
     df["Umgebung"] = "Outdoor"
 
-    df = df.rename(columns={"Family Name": "Name", "Given Name": "Vorname", "Birth": "YOB", "NPC": "Nation", "Date": "Datum", "City": "RORT", "Result": "Leistung", "Record Type": "Code"})
+    df = df.rename(columns={"Family Name": "Name", "Given Name": "Vorname", "Birth": "YOB", "NPC": "Nation", "Date": "Datum", "City": "RORT", "Time": "Leistung", "Record Type": "Code"})
 
     if(args.code):
         df["Code"] = args.code
