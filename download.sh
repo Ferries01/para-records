@@ -1,6 +1,6 @@
 #!/bin/bash
 
-python3 main.py --url https://www.ipc-services.org/sdms/web/records/ath/excel/type/world --output records/world.csv 
+python3 main.py --url https://www.ipc-services.org/sdms/web/records/ath/excel/type/wr --output records/world.csv 
 python3 main.py --url https://www.ipc-services.org/sdms/web/records/ath/excel/type/afr --output records/africa.csv --code PAR
 python3 main.py --url https://www.ipc-services.org/sdms/web/records/ath/excel/type/amr --output records/america.csv --code PAR
 python3 main.py --url https://www.ipc-services.org/sdms/web/records/ath/excel/type/asr --output records/asia.csv --code PAR
