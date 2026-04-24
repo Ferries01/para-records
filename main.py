@@ -105,7 +105,7 @@ if __name__ == '__main__':
     df['Birth'] = df['Birth'].fillna(-1).astype(float).astype(int)
     # replace all Birth -1 with NaN
     df['Birth'] = df['Birth'].replace(-1, pd.NA)
-    df = df.drop(columns=["Event Code", "Time (ms)", "SDMS ID", "Gender", "Class", "Equalled", "Points"], errors="ignore")
+    df = df.drop(columns=["Event Code", "Time (ms)", "Athlete ID", "Gender", "Class", "Equalled", "Points"], errors="ignore")
     # rename Event Type to discipline
     df = df.rename(columns={"Event Type": "discipline"})
 
