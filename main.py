@@ -51,7 +51,7 @@ if __name__ == '__main__':
     # Drop every row where vacant is set
     df = df[~df.eq("vacant").any(axis=1)]
 
-    # Drop all rows where "SDMS ID" is 1 or NaN
+    # Drop all rows where "Athlete ID" is 1 or NaN
     df = df[~df["Athlete ID"].eq(1)]
     df = df.dropna(subset=["Athlete ID"])
 
