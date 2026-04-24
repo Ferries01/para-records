@@ -51,9 +51,12 @@ if __name__ == '__main__':
     # Drop every row where vacant is set
     df = df[~df.eq("vacant").any(axis=1)]
 
-    # Drop all rows where "Athlete ID" is 1 or NaN
-    df = df[~df["Athlete ID"].eq(1)]
-    df = df.dropna(subset=["Athlete ID"])
+    print(df.head())
+
+    # Drop all rows where "SDMS ID" is 1 or NaN
+    if "SDMS ID" in df.columns:
+        df = df[~df["SDMS ID"].eq(1)]
+        df = df.dropna(subset=["SDMS ID"])
 
     # remove all where Equalled is "="
     if "Equalled" in df.columns:
@@ -105,7 +108,7 @@ if __name__ == '__main__':
     df['Birth'] = df['Birth'].fillna(-1).astype(float).astype(int)
     # replace all Birth -1 with NaN
     df['Birth'] = df['Birth'].replace(-1, pd.NA)
-    df = df.drop(columns=["Event Code", "Time (ms)", "Athlete ID", "Gender", "Class", "Equalled", "Points"], errors="ignore")
+    df = df.drop(columns=["Event Code", "Time (ms)", "SDMS ID", "Gender", "Class", "Equalled", "Points"], errors="ignore")
     # rename Event Type to discipline
     df = df.rename(columns={"Event Type": "discipline"})
 
@@ -115,7 +118,9 @@ if __name__ == '__main__':
 
     if df["taf"].isna().sum() > 0:
         print(df[df["taf"].isna()])
-        raise ValueError("Some disciplines are not mapped")
+        #print(df.loc[df["taf"].isna(), ["discipline"]])
+        df = df.dropna(subset=["taf"])
+        #raise ValueError("Some disciplines are not mapped")
 
     df = df.drop(columns=["discipline"], errors="ignore")
     df = df.rename(columns={"taf": "Bewerb"})
@@ -137,7 +142,9 @@ if __name__ == '__main__':
 
     df["Umgebung"] = "Outdoor"
 
-    df = df.rename(columns={"Family Name": "Name", "Given Name": "Vorname", "Birth": "YOB", "NPC": "Nation", "Date": "Datum", "City": "RORT", "Time": "Leistung", "Record Type": "Code"})
+    df["Result"] = df["Time"].fillna(df["Width"])
+    print(df.head())
+    df = df.rename(columns={"Wind Speed": "Wind", "Family Name": "Name", "Given Name": "Vorname", "Birth": "YOB", "NPC": "Nation", "Date": "Datum", "City": "RORT", "Result": "Leistung", "Record Type": "Code"})
 
     if(args.code):
         df["Code"] = args.code
