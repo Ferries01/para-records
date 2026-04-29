@@ -67,8 +67,17 @@ if __name__ == '__main__':
         df["Event Type"] = df["Event Type"].str.split(" ", n=1).str[1]
 
     if "Event" in df.columns:
-        df["Class"] = df["Event"].str.split().str[-1]
-        df["Event Type"] = df["Event"].str.split().str[1:-1].str.join(" ")
+        # 4x100 m Universal Relay is a special case, because it has no class and the event type is 4x100 m
+        mask = df["Event"] == "4x100 m Universal Relay"
+        df.loc[mask, "Class"] = "X"
+        df.loc[mask, "Event Type"] = "4x100 m"
+
+        # Handle all other rows
+        df.loc[~mask, "Class"] = df.loc[~mask, "Event"].str.split().str[-1]
+        df.loc[~mask, "Event Type"] = (
+            df.loc[~mask, "Event"].str.split().str[1:-1].str.join(" ")
+        )
+
         df = df.drop(columns=["Event"])
 
     if "Rank" in df.columns:
@@ -78,37 +87,44 @@ if __name__ == '__main__':
     split_rows = []
     for index, row in df.iterrows():
         class_value = row['Class']
-        if '-' in class_value:
-            classes = class_value.split('-')
-            type = class_value[0]
-            classes = ["".join(filter(str.isdigit, c)) for c in classes]
-            start = int(classes[0])
-            end = int(classes[1])
-            for i in range(start, end + 1):
+        prefix = class_value[0]   # T
+
+        # split by /
+        parts = class_value.split('/')
+
+        for part in parts:
+            # if no prefix in later parts, add it
+            if not part[0].isalpha():
+                part = prefix + part
+
+            if '-' in part:
+                start_end = part[1:].split('-')   # remove T
+                start = int(start_end[0])
+                end = int(start_end[1])
+
+                for i in range(start, end + 1):
+                    new_row = row.copy()
+                    new_row['Class'] = prefix + str(i)
+                    split_rows.append(new_row)
+
+            else:
                 new_row = row.copy()
-                new_row['Class'] = type + str(i)
+                new_row['Class'] = part
                 split_rows.append(new_row)
-        elif '/' in class_value:
-            type = class_value[0]
-            classes = class_value.split('/')
-            for new_class in classes:
-                new_row = row.copy()
-                if(new_class[0] == type):
-                    new_row['Class'] = new_class
-                else:
-                    new_row['Class'] = type + new_class
-                split_rows.append(new_row)
-        else: 
-            split_rows.append(row)
 
     df = pd.DataFrame(split_rows)
 
-    df["Klasse"] = df["Gender"].astype(str)  + df["Class"]
+    df["Klasse"] = df.apply(
+        lambda row: row["Class"]
+        if str(row["Class"]).upper() == "X"
+        else str(row["Gender"]) + str(row["Class"]),
+        axis=1
+    )
     df["Geschlecht"] = df["Gender"].map({"M": "Male", "W": "Female"})
     df['Birth'] = df['Birth'].fillna(-1).astype(float).astype(int)
     # replace all Birth -1 with NaN
     df['Birth'] = df['Birth'].replace(-1, pd.NA)
-    df = df.drop(columns=["Event Code", "Time (ms)", "SDMS ID", "Gender", "Class", "Equalled", "Points"], errors="ignore")
+    df = df.drop(columns=["Event Code", "Time (ms)", "SDMS ID", "Gender", "Class", "Equalled"], errors="ignore")
     # rename Event Type to discipline
     df = df.rename(columns={"Event Type": "discipline"})
 
@@ -118,9 +134,9 @@ if __name__ == '__main__':
 
     if df["taf"].isna().sum() > 0:
         print(df[df["taf"].isna()])
-        #print(df.loc[df["taf"].isna(), ["discipline"]])
+        print(df.loc[df["taf"].isna(), ["discipline", "Klasse"]])
         df = df.dropna(subset=["taf"])
-        #raise ValueError("Some disciplines are not mapped")
+        raise ValueError("Some disciplines are not mapped")
 
     df = df.drop(columns=["discipline"], errors="ignore")
     df = df.rename(columns={"taf": "Bewerb"})
@@ -142,8 +158,7 @@ if __name__ == '__main__':
 
     df["Umgebung"] = "Outdoor"
 
-    df["Result"] = df["Time"].fillna(df["Width"])
-    print(df.head())
+    df["Result"] = df["Time"].fillna(df["Width"]).fillna(df["Points"])
     df = df.rename(columns={"Wind Speed": "Wind", "Family Name": "Name", "Given Name": "Vorname", "Birth": "YOB", "NPC": "Nation", "Date": "Datum", "City": "RORT", "Result": "Leistung", "Record Type": "Code"})
 
     if(args.code):
